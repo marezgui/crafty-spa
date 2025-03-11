@@ -3,6 +3,8 @@ import { describe, it, expect } from "vitest";
 import { getAuthUserTimeline } from "../usecases/getAuthUserTimeline.usecase";
 import { FakeTimelineGateway } from "../infra/FakeTimelineGateway";
 import { FakeAuthGateway } from "@/lib/auth/infra/FakeAuthGateway";
+import { selectUserTimeline } from "../slices/timelimesSlice";
+import { selectMessage } from "../slices/messagesSlice";
 
 describe("Feat : Retrieving authenticated user's timeline", () => {
   it("Example : Alice is authenticated and can see her timeline", async () => {
@@ -88,6 +90,16 @@ function thenTheReceivedTimelineShouldBe(expectedTimeline: {
     publishedAt: string;
   }[];
 }) {
-  const authUserTimeline = store.getState();
-  expect(authUserTimeline).toEqual(expectedTimeline);
+  const authUserTimeline = selectUserTimeline(
+    expectedTimeline.id,
+    store.getState()
+  );
+  expect(authUserTimeline).toEqual({
+    id: expectedTimeline.id,
+    user: expectedTimeline.user,
+    messages: expectedTimeline.messages.map((m) => m.id),
+  });
+  expectedTimeline.messages.forEach((message) => {
+    expect(selectMessage(message.id, store.getState())).toEqual(message);
+  });
 }
