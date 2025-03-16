@@ -29,6 +29,7 @@ describe("HomeViewModel", () => {
               user: "Alice",
             },
           },
+          loadingTimelineByUser: {},
         },
       }
     );
@@ -55,6 +56,7 @@ describe("HomeViewModel", () => {
               user: "Alice",
             },
           },
+          loadingTimelineByUser: {},
         },
         messages: {
           ids: [],
@@ -101,6 +103,7 @@ describe("HomeViewModel", () => {
               user: "Alice",
             },
           },
+          loadingTimelineByUser: {},
         },
         messages: {
           ids: [],
@@ -158,6 +161,29 @@ describe("HomeViewModel", () => {
             publishedAt: "just now",
           },
         ],
+      },
+    });
+  });
+
+  test("Example: The timeline is loading", () => {
+    const store = createTestStore(
+      {},
+      {
+        timelines: {
+          ids: ["alice-timeline-id"],
+          entities: {},
+          loadingTimelineByUser: {
+            Alice: true,
+          },
+        },
+      }
+    );
+    const homeViewModel = selectHomeViewModel(store.getState(), getNow);
+
+    expect(homeViewModel).toEqual({
+      timeline: {
+        type: HomeViewModelType.LOADING_TIMELINE,
+        info: "Loading...",
       },
     });
   });
